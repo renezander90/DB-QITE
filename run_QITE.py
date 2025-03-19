@@ -35,6 +35,7 @@ def run_QITE(H, U_0, exp_H, s_values, steps, method='GC'):
     variances = []
     circuits = []
     runtimes = []
+    statevectors = []
 
     qv = QuantumVariable(H.find_minimal_qubit_amount())
     U_0(qv)
@@ -74,16 +75,30 @@ def run_QITE(H, U_0, exp_H, s_values, steps, method='GC'):
     circuit_qubits = {}
     circuit_depth = {}
 
-    # Collect data for circuits
+    # Collect data for circuits and statevectors
     for k, qc in enumerate(circuits):
         # We need to bind the symbolic parameter theta to transpile to specific basis gates
-        tqc = qc.bind_parameters(subs_dic={theta:1}).transpile(basis_gates=["cx","u"])
+        if k>0:
+            qc = qc.bind_parameters(subs_dic={theta:optimal_s[k-1]})   
+ 
+        tqc = qc.transpile(basis_gates=["cx","u"])
         circuit_ops[k] = tqc.count_ops()
         circuit_qubits[k]=tqc.num_qubits()
         circuit_depth[k]=tqc.depth()
 
+        if k>0:
+            # Move the qubits to the top
+            n = H.find_minimal_qubit_amount()
+            for i in range(qc.num_qubits() - n):
+                qc.qubits.insert(0, qc.qubits.pop(-1))
+
+            # Compute the unitary
+            statevectors.append(qc.statevector_array()[:2**n])
+        else:
+            statevectors.append(qc.statevector_array())
+
     circuit_data = [circuit_ops, circuit_qubits, circuit_depth, circuit_qubits]
 
-    result_dict = {'evolution_times':evolution_times,'optimal_energies':optimal_energies,'variances':variances,'circuit_data':circuit_data,'runtimes':runtimes}
+    result_dict = {'evolution_times':evolution_times,'optimal_energies':optimal_energies,'variances':variances,'circuit_data':circuit_data,'runtimes':runtimes,'statevectors':statevectors}
 
     return result_dict
