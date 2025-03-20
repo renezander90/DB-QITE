@@ -117,7 +117,10 @@ def get_statevector(qc,n,subs_dic=None):
     for i in range(bqc.num_qubits() - n):
         bqc.qubits.insert(0, bqc.qubits.pop(-1))
 
-    return bqc.statevector_array()[:2**n]
+    statevector = bqc.statevector_array()[:2**n]
+    statevector = statevector/np.linalg.norm(statevector)
+
+    return statevector
 
 def compute_moments(psi, H):
     psi = np.array([psi]).transpose()
