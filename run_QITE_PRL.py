@@ -94,7 +94,7 @@ def run_QITE_PRL(H, U_0, exp_H, s_values, steps, method='GC', use_statevectors=F
         if k>0:
             qc = qc.bind_parameters(subs_dic={theta:optimal_s[k-1]})   
  
-        tqc = qc.transpile(basis_gates=["cx","u"])
+        tqc = qc.transpile(basis_gates=["cz","u"])
         circuit_ops[k] = tqc.count_ops()
         circuit_qubits[k]=tqc.num_qubits()
         circuit_depth[k]=tqc.depth()
