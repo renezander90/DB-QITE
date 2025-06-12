@@ -46,8 +46,8 @@ def compile_QITE(H, U_0, exp_H, s_values, steps, method='GC'):
     for k, qc in enumerate(circuits):
         tqc = qc.transpile(basis_gates=["cz","u"])
         circuit_ops[k] = tqc.count_ops()
-        circuit_qubits[k]=tqc.num_qubits()
-        circuit_depth[k]=tqc.depth()
+        circuit_qubits[k] = tqc.num_qubits()
+        circuit_depth[k] = tqc.depth()
 
     circuit_data = [circuit_ops, circuit_qubits, circuit_depth]
     result_dict = {'circuit_data':circuit_data}
