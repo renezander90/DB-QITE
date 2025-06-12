@@ -49,6 +49,7 @@ def run_QITE(H, U_0, exp_H, s_values, steps, method='GC', use_statevectors=False
 
     optimal_energies.append(E_0)
 
+    # Find optimal evolution times s_k with 20-point grid search
     for k in range(1,steps+1):
 
         # Perform k steps of QITE
